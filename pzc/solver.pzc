@@ -1,0 +1,23 @@
+#include "pzc_builtin.h"
+#include "../solver.hpp"
+
+uint64_t solve(int N, int depth, uint32_t left, uint32_t mid, uint32_t right) {
+  if (depth == N) return 1;
+  uint64_t sum = 0;
+  for (uint32_t pos = (((uint32_t)1 << N) - 1) & ~(left | mid | right);
+      pos; pos &= pos-1) {
+    uint32_t bit = pos & -pos;
+    sum += solve(N, depth+1, (left | bit) << 1, mid | bit, (right | bit) >> 1);
+  }
+  return sum;
+}
+
+void pzc_Solve(const Problem * const probs, uint64_t * const result, size_t count) {
+  size_t offset = get_tid() + get_pid() * get_maxtid();
+  result[offset] = 0;
+  for (size_t index = offset; index < count; index += get_maxpid() * get_maxtid()) {
+    const Problem &prob = probs[index];
+    result[offset] += solve(prob.N, prob.depth, prob.left, prob.mid, prob.right);
+  }
+  flush();
+}
