@@ -1,5 +1,5 @@
 DEFAULT_MAKE_DIR=/opt/pzsdk.ver4.1/make
-PZC_TARGET_ARCH=sc1
+PZC_TARGET_ARCH=sc2
 TARGET=solver.pz
 PZCSRC = ../pzc/solver.pzc
 CLANG_OPT=-O3 -std=c++14

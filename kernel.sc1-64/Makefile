@@ -1,4 +1,4 @@
-DEFAULT_MAKE_DIR=/opt/pzsdk.ver4.0/make
+DEFAULT_MAKE_DIR=/opt/pzsdk.ver4.1/make
 PZC_TARGET_ARCH=sc1-64
 TARGET=solver.pz
 PZCSRC = ../pzc/solver.pzc
