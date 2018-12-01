@@ -176,8 +176,11 @@ int main(int argc, char **argv) {
   const size_t global_work_size = 15872; // max size
   cl_mem memProb = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(Problem)*length, nullptr, &result);
   cl_mem memRes = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint64_t)*global_work_size, nullptr, &result);
+  cl_mem memIndex = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint64_t), nullptr, &result);
 
   clEnqueueWriteBuffer(command_queue, memProb, CL_TRUE, 0, sizeof(Problem)*length, nqe.probs.data(), 0, nullptr, nullptr);
+  uint64_t zero = 0;
+  clEnqueueWriteBuffer(command_queue, memIndex, CL_TRUE, 0, sizeof(uint64_t), &zero, 0, nullptr, nullptr);
 
   result = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&memProb);
   if (result != CL_SUCCESS) {
@@ -192,6 +195,12 @@ int main(int argc, char **argv) {
     std::cerr << "kernel arg set success" << std::endl;
   }
   result = clSetKernelArg(kernel, 2, sizeof(size_t), (void *)&length);
+  if (result != CL_SUCCESS) {
+    std::cerr << "kernel arg set error: " << getErrorString(result) << std::endl;
+  } else {
+    std::cerr << "kernel arg set success" << std::endl;
+  }
+  result = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&memIndex);
   if (result != CL_SUCCESS) {
     std::cerr << "kernel arg set error: " << getErrorString(result) << std::endl;
   } else {
@@ -224,6 +233,7 @@ int main(int argc, char **argv) {
   clReleaseProgram(program);
   clReleaseMemObject(memProb);
   clReleaseMemObject(memRes);
+  clReleaseMemObject(memIndex);
   clReleaseCommandQueue(command_queue);
   clReleaseContext(context);
 
